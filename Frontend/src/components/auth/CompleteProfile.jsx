@@ -64,6 +64,42 @@ function CompleteProfile() {
     "Prefer Not to Say",
   ];
 
+  const interests = [
+    "Traveling",
+    "Cooking",
+    "Fitness ",
+    "Music",
+    "Reading",
+    " Photography",
+    "Hiking",
+    "Gaming",
+    "Movies",
+    "Sports",
+    " Gadgets",
+    "Dancing",
+    "Volunteering",
+    "Fashion ",
+    "Pets ",
+  ];
+
+  const dislikes = [
+    "Smoking",
+    "Partying",
+    "Hygiene",
+    "Negativity",
+    "Dishonesty",
+    "Ambition",
+    "Diet",
+    "Laziness",
+    "Disrespect",
+    "Screens",
+    "Communication",
+    "Jealousy",
+    "Inconsideration",
+    "Clinginess",
+    "Recklessness",
+  ];
+
   const [selectedGender, setSelectedGender] = useState("");
 
   const handleGenderClick = (gender) => {
@@ -159,9 +195,19 @@ function CompleteProfile() {
               <HorizontalLine />
             </div>
             <FormFieldTitle title="Interests" />
-            <ProfileTextField />
+            <ProfileTextField
+              type="choices"
+              name="Choose your interest"
+              choices={interests}
+              isRequired="required"
+            />
             <FormFieldTitle title="Dislikes" />
-            <ProfileTextField />
+            <ProfileTextField
+              type="choices"
+              name="Choose your dislikes"
+              choices={dislikes}
+              isRequired="required"
+            />
           </div>
 
           <div className="flex flex-col mx-auto max-w-full">

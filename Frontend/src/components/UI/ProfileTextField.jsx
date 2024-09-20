@@ -1,3 +1,6 @@
+import { useState } from "react";
+import Preferences from "./Preferences";
+
 function ProfileTextField({
   name,
   type = "text",
@@ -5,7 +8,10 @@ function ProfileTextField({
   options = [],
   onGenderSelect,
   selectedGender,
+  choices = [],
 }) {
+  const [showPreferences, setShowPreferences] = useState(false);
+
   return (
     <div className="w-full">
       {type === "select" ? (
@@ -38,6 +44,19 @@ function ProfileTextField({
               {gender}
             </div>
           ))}
+        </div>
+      ) : type === "choices" ? (
+        <div>
+          <input
+            type="text"
+            name={name}
+            placeholder={name}
+            required={isRequired}
+            className="pl-4 rounded-md w-full h-[41px]"
+            onClick={() => setShowPreferences(!showPreferences)}
+            readOnly
+          />
+          {showPreferences && <Preferences choices={choices} />}
         </div>
       ) : (
         <input
