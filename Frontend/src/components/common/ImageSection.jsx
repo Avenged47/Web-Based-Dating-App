@@ -1,13 +1,41 @@
+import { useState } from "react";
 import addPictureIcon from "../../assets/images/add picture.png";
 
 function ImageSection() {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="relative outline-custom-dim-grey rounded-[7px] w-24 h-[130px] outline-[3px] outline-dashed">
-      <img
-        src={addPictureIcon}
-        className="right-[-4px] bottom-[-3px] absolute w-6 h-6"
-        alt="Add Pictures"
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="absolute inset-0 opacity-0 cursor-pointer"
       />
+      {selectedImage ? (
+        <img
+          src={selectedImage}
+          alt="Selected"
+          className="rounded-[7px] w-full h-full object-cover"
+        />
+      ) : (
+        <img
+          src={addPictureIcon}
+          className="right-[-4px] bottom-[-3px] absolute w-6 h-6"
+          alt="Add Pictures"
+        />
+      )}
     </div>
   );
 }
