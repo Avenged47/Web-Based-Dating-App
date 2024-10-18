@@ -1,7 +1,7 @@
 import { useState } from "react";
 import addPictureIcon from "../../assets/images/add picture.png";
 
-function ImageSection() {
+function ImageSection({ onImageUpload }) {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (e) => {
@@ -10,13 +10,14 @@ function ImageSection() {
       const reader = new FileReader();
       reader.onload = () => {
         setSelectedImage(reader.result);
+        onImageUpload(file);
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="relative outline-custom-dim-grey rounded-[7px] w-24 h-[130px] outline-[3px] outline-dashed">
+    <div className="relative outline-custom-dim-grey rounded-[7px] w-32 h-[160px] outline-[3px] outline-dashed">
       <input
         type="file"
         accept="image/*"

@@ -9,6 +9,11 @@ function ProfileTextField({
   onGenderSelect,
   selectedGender,
   choices = [],
+  selectedChoices = [],
+  onToggleChoice,
+  value,
+  onChange,
+  placeholder,
 }) {
   const [showPreferences, setShowPreferences] = useState(false);
 
@@ -19,6 +24,8 @@ function ProfileTextField({
           name={name}
           required={isRequired}
           className="pl-4 rounded-md w-full h-[41px]"
+          onChange={onChange}
+          value={value}
         >
           <option value="" disabled>
             Select {name}
@@ -50,13 +57,20 @@ function ProfileTextField({
           <input
             type="text"
             name={name}
-            placeholder={name}
+            placeholder={placeholder}
             required={isRequired}
             className="pl-4 rounded-md w-full h-[41px]"
             onClick={() => setShowPreferences(!showPreferences)}
+            value={selectedChoices.join(", ")}
             readOnly
           />
-          {showPreferences && <Preferences choices={choices} />}
+          {showPreferences && (
+            <Preferences
+              choices={choices}
+              selectedChoices={selectedChoices}
+              onToggleChoice={onToggleChoice}
+            />
+          )}
         </div>
       ) : (
         <input
@@ -65,6 +79,8 @@ function ProfileTextField({
           placeholder={name}
           required={isRequired}
           className="pl-4 rounded-md w-full h-[41px]"
+          value={value}
+          onChange={onChange}
         />
       )}
     </div>
