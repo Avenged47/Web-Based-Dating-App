@@ -8,6 +8,7 @@ import notifications from "../assets/images/notifications.png";
 import profile from "../assets/images/profile.png";
 import search from "../assets/images/search.png";
 import settings from "../assets/images/settings.png";
+import image from "../assets/images/OnlineDating1.jpg";
 
 import Logo from "../components/common/Logo";
 import Sidebar from "../components/common/Sidebar";
@@ -30,7 +31,11 @@ function UserDashboard() {
   // const [selectedSidebarIcon, setSelectedSidebarIcon] = useState("Home");
 
   const handleSidebarClick = (option) => {
-    setSelectedOption(option);
+    if (selectedOption === option) {
+      setSelectedOption("");
+    } else {
+      setSelectedOption(option);
+    }
     console.log("Option selected:", option);
   };
 
@@ -88,28 +93,33 @@ function UserDashboard() {
         </div>
 
         <VerticalLine height="100%" />
-        <ChatUi />
-        {/* <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
-          <CardLayout />
-          <div className="flex flex-row gap-3 pt-3">
-            <ChooseMatchButton type="button">
-              <img src={cross} alt="cross icon" />
-            </ChooseMatchButton>
-            <ChooseMatchButton type="button">
-              <img src={add} alt="add icon" />
-            </ChooseMatchButton>
+        {selectedOption === "Messages" ? (
+          <ChatUi />
+        ) : selectedOption === "Profile" ? (
+          <div className="flex-grow px-[30px] py-14 overflow-y-auto">
+            <CompleteProfile />
           </div>
-        </div> */}
-
-        <div className="flex md:flex-row flex-col items-center md:items-start">
-          <VerticalLine height="100%" />
-          <div className="pt-14">
-            <ProfileName />
+        ) : (
+          <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
+            <CardLayout />
+            <div className="flex flex-row gap-3 pt-3">
+              <ChooseMatchButton type="button">
+                <img src={cross} alt="cross icon" />
+              </ChooseMatchButton>
+              <ChooseMatchButton type="button">
+                <img src={add} alt="add icon" />
+              </ChooseMatchButton>
+            </div>
           </div>
-        </div>
-        {/* <div className="flex-grow px-[30px] py-14 overflow-y-auto">
-          <CompleteProfile />
-        </div> */}
+        )}
+        {selectedOption !== "Profile" && (
+          <div className="flex md:flex-row flex-col items-center md:items-start">
+            <VerticalLine height="100%" />
+            <div className="pt-14">
+              <ProfileName name="Anush Dhungana" image={image} />
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
