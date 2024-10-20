@@ -44,7 +44,7 @@ function ProfileTextField({
               onClick={() => onGenderSelect(gender)}
               className={`cursor-pointer rounded-md h-[41px] flex items-center justify-center  w-full ${
                 selectedGender === gender
-                  ? "bg-custom-indigo text-white"
+                  ? "bg-custom-pink text-white"
                   : "bg-white"
               } `}
             >

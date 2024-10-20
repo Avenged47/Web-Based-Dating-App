@@ -7,13 +7,14 @@ import email from "../../assets/images/email.png";
 import closeeye from "../../assets/images/closeeye.png";
 import useShowPassword from "../../hooks/useShowPassword";
 
-function Signup() {
+function Signup({ switchToLogin }) {
   const [showPassword, setShowPassword, togglePasswordVisibility] =
     useShowPassword();
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log("form submitted");
+    console.log("Signup successful");
+    switchToLogin();
   };
 
   return (

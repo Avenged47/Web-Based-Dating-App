@@ -1,7 +1,17 @@
-function Sidebar({ icon, text }) {
+function Sidebar({ icon, text, onClick, isSelected, selectedSidebarIcon }) {
   return (
-    <li className="flex flex-row gap-3 pt-8 font-bold text-custom-indigo text-xl">
-      <img src={icon} alt={`${text} icon`} /> {text}
+    <li
+      onClick={onClick}
+      className={`cursor-pointer flex flex-row gap-3 pt-8 font-bold text-xl transition-colors ${
+        isSelected ? "text-custom-pink" : "text-custom-indigo"
+      }`}
+    >
+      <img
+        src={isSelected ? selectedSidebarIcon : icon}
+        alt={`${text} icon`}
+        className="w-6 h-6 transition-all duration-300"
+      />
+      {text}
     </li>
   );
 }

@@ -64,7 +64,7 @@ function SlidingForm({ setShowSlidingForm }) {
               </div>
             </div>
             <div className="flex flex-shrink-0 justify-center items-center bg-white w-1/2 h-full">
-              <Signup />
+              <Signup switchToLogin={() => setIsAnimated(false)} />
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import FormFieldTitle from "../UI/FormFieldTitle";
 import ProfileTextField from "../UI/ProfileTextField";
 import Button from "../UI/Button";
 import { useState } from "react";
+import formValidation from "../../validation/formValidation";
 
 function CompleteProfile() {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -105,6 +106,8 @@ function CompleteProfile() {
   const [selectedDislikes, setSelectedDislikes] = useState([]);
   const [imageData, setImageData] = useState([]);
 
+  const [errors, setErrors] = useState({});
+
   const handleImageUpload = (file) => {
     setImageData((prevImages) => [...prevImages, file]);
   };
@@ -159,6 +162,18 @@ function CompleteProfile() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // const formValidationErrors = formValidation(
+    //   formData,
+    //   selectedGender,
+    //   selectedInterests,
+    //   selectedDislikes
+    // );
+
+    // if (Object.keys(formValidationErrors).length > 0) {
+    //   setErrors(formValidationErrors);
+    //   return;
+    // }
+
     const submittedData = {
       ...formData,
       interests: selectedInterests,
@@ -185,7 +200,11 @@ function CompleteProfile() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
+                  isRequired={"required"}
                 />
+                {errors.firstName && (
+                  <p className="text-red-500">{errors.firstName}</p>
+                )}{" "}
               </div>
               <div>
                 <FormFieldTitle title="Last  Name" />
@@ -193,6 +212,7 @@ function CompleteProfile() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
+                  isRequired={"required"}
                 />
               </div>
             </div>
@@ -248,6 +268,7 @@ function CompleteProfile() {
                 selectedGender={selectedGender}
                 value={formData.gender}
                 onGenderSelect={handleGenderClick}
+                isRequired
               />
             </div>
             <FormFieldTitle title="Sexual Orientation" />
