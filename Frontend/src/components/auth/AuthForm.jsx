@@ -2,7 +2,7 @@ import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 import "tailwindcss/tailwind.css";
 
-import Button from "../UI/Button";
+import Button from "../UI/ButtonUi";
 
 const customIndigo = "#6C51A2";
 

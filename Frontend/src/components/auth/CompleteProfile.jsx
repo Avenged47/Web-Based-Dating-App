@@ -2,7 +2,7 @@ import HorizontalLine from "../common/HorizontalLine";
 import ImageSection from "../common/ImageSection";
 import FormFieldTitle from "../UI/FormFieldTitle";
 import ProfileTextField from "../UI/ProfileTextField";
-import Button from "../UI/Button";
+import Button from "../UI/ButtonUi";
 import { useState } from "react";
 import formValidation from "../../validation/formValidation";
 

@@ -1,4 +1,4 @@
-function Button({ onClick, children, type = "button", formType, ...props }) {
+function ButtonUi({ onClick, children, type = "button", formType, ...props }) {
   let className;
   if (formType === "loginSignup") {
     className =
@@ -16,4 +16,4 @@ function Button({ onClick, children, type = "button", formType, ...props }) {
   );
 }
 
-export default Button;
+export default ButtonUi;

@@ -1,16 +1,13 @@
-import profileImage from "../../assets/images/profile.jpg";
-
-function ProfileName({ color = "text-custom-indigo", name, image }) {
+function ProfileName({ color = "text-custom-indigo", name, username }) {
   const onClick = () => {
     console.log("Profile clicked");
   };
   return (
-    <div
-      className="flex items-center gap-2 pl-4 w-full cursor-pointer"
-      onClick={onClick}
-    >
-      <img className="rounded-full w-[52px] h-[52px]" src={image} />
-      <div className={`font-bold text-center ${color} text-xl `}>{name}</div>
+    <div className="flex items-center cursor-pointer" onClick={onClick}>
+      {/* <ProfileImage src={image} size={size} /> */}
+      <div className={`font-bold text-center ${color} text-xl `}>
+        {username ? `@  ${username}` : name}
+      </div>
     </div>
   );
 }
