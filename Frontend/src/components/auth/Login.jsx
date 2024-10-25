@@ -18,9 +18,9 @@ import { useState } from "react";
 
 function Login() {
   const validCredentials = [
-    { username: "user1", password: "password123" },
-    { username: "user2", password: "mypassword" },
-    { username: "user3", password: "12345678" },
+    { username: "user1", password: "anush123" },
+    { username: "user2", password: "anush123" },
+    { username: "user3", password: "anush123" },
   ];
   const [showErrorMessage, setShowErrorMessage] = useState("");
 

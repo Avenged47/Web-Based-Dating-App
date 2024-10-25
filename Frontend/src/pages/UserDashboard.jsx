@@ -99,8 +99,8 @@ function UserDashboard() {
           <ChatUi />
         ) : selectedOption === "Profile" ? (
           <div className="flex-grow px-[30px] py-14 overflow-y-auto">
-            <ProfileUi />
-            {/* <CompleteProfile /> */}
+            {/* <ProfileUi /> */}
+            <CompleteProfile />
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
