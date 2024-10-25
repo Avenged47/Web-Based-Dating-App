@@ -49,7 +49,7 @@ function Login() {
   return (
     //button color change baki xa
     <AuthForm
-      title={"login"}
+      title={"Login"}
       subtitle={"Please sign in to continue"}
       buttonText={"Login"}
       onSubmit={handleSubmit(onSubmit)}

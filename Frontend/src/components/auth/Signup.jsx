@@ -6,15 +6,27 @@ import eye from "../../assets/images/eye.png";
 import email from "../../assets/images/email.png";
 import closeeye from "../../assets/images/closeeye.png";
 import useShowPassword from "../../hooks/useShowPassword";
+import useAuthForm from "../../hooks/useAuthForm";
+import ErrorMessage from "../UI/ErrorMessage";
+
+import { useState } from "react";
 
 function Signup({ switchToLogin }) {
   const [showPassword, setShowPassword, togglePasswordVisibility] =
     useShowPassword();
+  const [passwordmatch, setPasswordmatch] = useState(false);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    console.log("Signup successful");
-    switchToLogin();
+  const { register, handleSubmit, errors } = useAuthForm({ type: "signup" });
+
+  const onSubmit = (data) => {
+    const { email, username, password, confirmPassword } = data;
+    console.log(data);
+
+    if (password !== confirmPassword) {
+      setPasswordmatch("Password doesnot match");
+    } else {
+      switchToLogin();
+    }
   };
 
   return (
@@ -24,21 +36,26 @@ function Signup({ switchToLogin }) {
       buttonText="Sign  Up"
       // footerText="Already have account?"
       // footerButtoon="Login"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <Textfield
-        leftIcon={<img src={username} />}
-        name={"username"}
-        placeholder={"Username"}
-        isRequired={"required"}
-      />
       <Textfield
         leftIcon={<img src={email} />}
         name={"email"}
         placeholder={"Email"}
         type={"email"}
         isRequired={"required"}
+        {...register("email")}
       />
+      <ErrorMessage message={errors.email?.message} />
+      <Textfield
+        leftIcon={<img src={username} />}
+        name={"username"}
+        placeholder={"Username"}
+        isRequired={"required"}
+        {...register("username")}
+      />
+
+      <ErrorMessage message={errors.username?.message} />
       <Textfield
         leftIcon={<img src={password} />}
         name={"password"}
@@ -52,7 +69,9 @@ function Signup({ switchToLogin }) {
           )
         }
         isRequired={"required"}
+        {...register("password")}
       />
+      <ErrorMessage message={errors.password?.message} />
 
       <Textfield
         leftIcon={<img src={password} />}
@@ -67,7 +86,11 @@ function Signup({ switchToLogin }) {
           )
         }
         isRequired={"required"}
+        {...register("confirmPassword")}
       />
+
+      <ErrorMessage message={errors.confirmPassword?.message} />
+      <ErrorMessage message={passwordmatch} />
     </AuthForm>
   );
 }

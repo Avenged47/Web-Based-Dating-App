@@ -1,11 +1,12 @@
 import * as yup from "yup";
 
 const signupSchema = yup.object().shape({
-  username: yup.string().required("Username is required"),
-  password: yup
+  email: yup
     .string()
-    .required("your username or password is incorrect   ")
-    .min(6, "Password must be at least 6 characters"),
+    .email("Please enter a valid email")
+    .required("Email is required"),
+  username: yup.string().required("Username is required"),
+  password: yup.string().required("password is required"),
 });
 
 export default signupSchema;

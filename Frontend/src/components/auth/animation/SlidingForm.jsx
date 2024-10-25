@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Login from "../Login";
 import Signup from "../Signup";
-import onlineDating from "../../../assets/images/dada.jpeg";
+import onlineDating from "../../../assets/images/form.jpg";
 import { AiOutlineClose } from "react-icons/ai";
 import Button from "../../UI/ButtonUi";
 
