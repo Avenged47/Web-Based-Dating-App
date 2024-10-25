@@ -3,6 +3,7 @@ import SearchUI from "./SearchUI";
 import closeeye from "../../assets/images/closeeye.png";
 import ProfileName from "../common/ProfileName";
 import girlfriend from "../../assets/images/girlfriend.jpg";
+import ProfileImage from "../common/ProfileImage";
 
 function ChatUi() {
   return (
@@ -57,8 +58,9 @@ function ChatUi() {
         </div>
       </div>
       <div className="flex flex-col justify-between bg-slate-100 px-2 py-2 rounded-3xl w-[660px] h-full">
-        <div className="bg-indigo-100 pt-2 rounded-3xl w-full">
-          <ProfileName name="John Doe" image={closeeye} />
+        <div className="flex flex-row gap-2 bg-indigo-100 pt-2 rounded-3xl w-full">
+          <ProfileImage image={closeeye} />
+          <ProfileName name="John Doe" />
         </div>
 
         <div className="flex-grow p-2 overflow-y-auto">

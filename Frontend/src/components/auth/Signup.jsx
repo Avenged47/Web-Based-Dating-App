@@ -28,24 +28,42 @@ function Signup({ switchToLogin }) {
     >
       <Textfield
         leftIcon={<img src={username} />}
-        name={"Username"}
+        name={"username"}
+        placeholder={"Username"}
         isRequired={"required"}
       />
       <Textfield
         leftIcon={<img src={email} />}
-        name={"Email"}
+        name={"email"}
+        placeholder={"Email"}
         type={"email"}
         isRequired={"required"}
       />
       <Textfield
         leftIcon={<img src={password} />}
-        name={"Password"}
+        name={"password"}
+        placeholder={"Password"}
         type={showPassword ? "text" : "password"}
         rightIcon={
           showPassword ? (
-            <img src={closeeye} onClick={togglePasswordVisibility} />
-          ) : (
             <img src={eye} onClick={togglePasswordVisibility} />
+          ) : (
+            <img src={closeeye} onClick={togglePasswordVisibility} />
+          )
+        }
+        isRequired={"required"}
+      />
+
+      <Textfield
+        leftIcon={<img src={password} />}
+        name={"password"}
+        placeholder={"Confirm Password"}
+        type={showPassword ? "text" : "password"}
+        rightIcon={
+          showPassword ? (
+            <img src={eye} onClick={togglePasswordVisibility} />
+          ) : (
+            <img src={closeeye} onClick={togglePasswordVisibility} />
           )
         }
         isRequired={"required"}

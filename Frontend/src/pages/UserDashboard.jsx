@@ -100,6 +100,7 @@ function UserDashboard() {
         ) : selectedOption === "Profile" ? (
           <div className="flex-grow px-[30px] py-14 overflow-y-auto">
             <ProfileUi />
+            {/* <CompleteProfile /> */}
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
@@ -117,9 +118,9 @@ function UserDashboard() {
         {selectedOption !== "Profile" && (
           <div className="flex md:flex-row flex-col items-center md:items-start">
             <VerticalLine height="100%" />
-            <div className="flex flex-row pt-14 pl-2">
-              <ProfileImage src={image} />
-              <ProfileName name="Anush Dhungana" />
+            <div className="flex flex-row gap-2 pt-14 pl-2">
+              <ProfileImage image={image} />
+              <ProfileName name="Anush Dhungana" image={image} />
             </div>
           </div>
         )}

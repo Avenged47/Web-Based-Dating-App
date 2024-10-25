@@ -4,7 +4,6 @@ import FormFieldTitle from "../UI/FormFieldTitle";
 import ProfileTextField from "../UI/ProfileTextField";
 import Button from "../UI/ButtonUi";
 import { useState } from "react";
-import formValidation from "../../validation/formValidation";
 
 function CompleteProfile() {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
