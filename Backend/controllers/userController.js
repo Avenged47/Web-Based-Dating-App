@@ -2,7 +2,10 @@ const User = require("../models/UserSchema");
 const bcrypt = require("bcryptjs");
 const imageController = require("./imageController");
 const { validateProfileData } = require("../validation/userValidation");
-const { validateImages } = require("../validation/imageValidation");
+const {
+  validatePictures,
+  validateDuplicatePictures,
+} = require("../validation/imageValidation");
 
 async function signup(req, res) {
   const { username, email, password } = req.body;
@@ -75,9 +78,13 @@ async function completeProfile(req, res) {
   let validatedImages = [];
   if (req.files && req.files.length > 0) {
     validatedImages = req.files.map((file) => file.path);
-    const { error: imageError } = validateImages(validatedImages);
-    if (imageError) {
-      return res.status(400).json({ msg: imageError.details[0].message });
+
+    // Validate the number of images and check for duplicates
+    try {
+      validatePictures(validatedImages);
+      validateDuplicatePictures(req.files); // Pass req.files for duplicate check
+    } catch (imageError) {
+      return res.status(400).json({ msg: imageError.message });
     }
   }
 
@@ -110,8 +117,30 @@ async function completeProfile(req, res) {
     user.interests = Array.isArray(interests) ? interests : [interests];
     user.dislikes = Array.isArray(dislikes) ? dislikes : [dislikes];
 
-    if (validatedImages.length > 0) {
-      user.images = [...new Set([...user.images, ...validatedImages])]; // Merge with unique images
+    if (req.files.length > 0) {
+      const existingBaseNames = new Set(
+        user.images.map((image) => {
+          return image.replace(/^uploads\/\d+-/, "uploads/");
+        })
+      );
+
+      const validatedImages = req.files.map((file) =>
+        file.path.replace(/\\/g, "/").trim()
+      );
+
+      const newImages = validatedImages.filter((image) => {
+        const baseImage = image.replace(/^uploads\/\d+-/, "uploads/");
+        const isDuplicate = existingBaseNames.has(baseImage);
+        console.log(
+          `Checking if base image '${baseImage}' is a duplicate: ${isDuplicate}`
+        );
+        return !isDuplicate;
+      });
+
+      if (newImages.length > 0) {
+        user.images = [...existingBaseNames, ...new Set(newImages)];
+        console.log("Updated User Images:", user.images);
+      }
     }
 
     user.isProfileComplete = true;
@@ -164,6 +193,19 @@ async function checkProfileComplete(req, res) {
   }
 }
 
+async function deleteUser(req, res) {
+  const id = req.params.id;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.status(200).json({ msg: "User deleted successfully", user });
+  } catch (error) {
+    res.status(500).json({ msg: "Server error" });
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -171,4 +213,5 @@ module.exports = {
   getUser,
   getAllUsers,
   checkProfileComplete,
+  deleteUser,
 };

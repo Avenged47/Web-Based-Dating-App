@@ -1,19 +1,18 @@
-const Joi = require("joi");
+// imageValidation.js
+function validatePictures(pictures) {
+  if (pictures.length < 3) {
+    throw new Error("At least 3 files are required");
+  }
+}
 
-const validateImages = (images) => {
-  const schema = Joi.array()
-    .items(Joi.string().trim().min(1))
-    .min(4)
-    .unique((a, b) => a === b)
-    .messages({
-      "array.base": `"images" should be an array of strings`,
-      "array.min": `"You must upload at least 4 images`,
-      "array.unique": `"Images should not contain duplicates`,
-    });
-
-  return schema.validate(images);
-};
+function validateDuplicatePictures(pictures) {
+  const filenames = pictures.map((file) => file.originalname);
+  if (new Set(filenames).size !== filenames.length) {
+    throw new Error("Duplicate files are not allowed");
+  }
+}
 
 module.exports = {
-  validateImages,
+  validatePictures,
+  validateDuplicatePictures,
 };

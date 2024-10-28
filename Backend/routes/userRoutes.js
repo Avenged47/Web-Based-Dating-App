@@ -15,10 +15,11 @@ router.put(
 
 router.get("/api/getUser/:id", userController.getUser);
 router.get("/api/getAllUsers", userController.getAllUsers);
-
 router.get(
   "/api/checkProfileComplete/:id",
   userController.checkProfileComplete
 );
+
+router.delete("/api/deleteUser/:id", userController.deleteUser);
 
 module.exports = router;

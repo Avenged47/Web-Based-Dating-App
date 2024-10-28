@@ -16,55 +16,41 @@ const profileSchema = Joi.object({
   }),
   dob: Joi.date().iso().required().max(minAgeDate).messages({
     "date.base": `"dob" should be a valid date`,
-    "date.max": `"You must be at least 18 years old`,
+    "date.max": `"You must be at least 18 years old"`,
     "any.required": `"dob" is a required field`,
   }),
-  gender: Joi.string().valid("Male", "Female", "Other").required().messages({
-    "any.only": `"gender" must be one of [Male, Female, Other]`,
+  gender: Joi.string().required().messages({
+    "string.base": `"gender" should be a type of 'text'`,
+    "string.empty": `"gender" cannot be an empty field`,
     "any.required": `"gender" is a required field`,
   }),
-  sexualOrientation: Joi.string()
-    .valid(
-      "Heterosexual",
-      "Homosexual",
-      "Bisexual",
-      "Other",
-      "Straight",
-      "Pansexual",
-      "Asexual"
-    )
-    .required()
-    .messages({
-      "any.only": `"sexualOrientation" must be one of [Heterosexual, Homosexual, Bisexual, Other, Straight, Pansexual, Asexual]`, // Update error message accordingly
-      "any.required": `"sexualOrientation" is a required field`,
-    }),
-  relationshipStatus: Joi.string()
-    .valid("Single", "In a relationship", "Married", "Divorced", "Widowed")
-    .required()
-    .messages({
-      "any.only": `"relationshipStatus" must be one of [Single, In a relationship, Married, Divorced, Widowed]`,
-      "any.required": `"relationshipStatus" is a required field`,
-    }),
-  interestedIn: Joi.string()
-    .valid("Male", "Female", "Both", "Other")
-    .required()
-    .messages({
-      "any.only": `"interestedIn" must be one of [Male, Female, Both, Other]`,
-      "any.required": `"interestedIn" is a required field`,
-    }),
+  sexualOrientation: Joi.string().required().messages({
+    "string.base": `"sexualOrientation" should be a type of 'text'`,
+    "string.empty": `"sexualOrientation" cannot be an empty field`,
+    "any.required": `"sexualOrientation" is a required field`,
+  }),
+  relationshipStatus: Joi.string().required().messages({
+    "string.base": `"relationshipStatus" should be a type of 'text'`,
+    "string.empty": `"relationshipStatus" cannot be an empty field`,
+    "any.required": `"relationshipStatus" is a required field`,
+  }),
+  interestedIn: Joi.string().required().messages({
+    "string.base": `"interestedIn" should be a type of 'text'`,
+    "string.empty": `"interestedIn" cannot be an empty field`,
+    "any.required": `"interestedIn" is a required field`,
+  }),
   interests: Joi.array()
     .items(Joi.string().trim().min(1))
     .min(5)
     .required()
     .messages({
       "array.base": `"interests" should be an array of strings`,
-      "array.min": `"You must choose at least 5 interests`,
+      "array.min": `"You must choose at least 5 interests"`,
       "any.required": `"interests" is a required field`,
     }),
   dislikes: Joi.array().items(Joi.string().trim().min(1)).min(5).messages({
     "array.base": `"dislikes" should be an array of strings`,
-    "array.min": `"You must choose at least 5 dislikes`,
-    "any.required": `"dislikes" is a required field`,
+    "array.min": `"You must choose at least 5 dislikes"`,
   }),
 });
 

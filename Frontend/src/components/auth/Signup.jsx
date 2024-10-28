@@ -8,6 +8,7 @@ import closeeye from "../../assets/images/closeeye.png";
 import useShowPassword from "../../hooks/useShowPassword";
 import useAuthForm from "../../hooks/useAuthForm";
 import ErrorMessage from "../UI/ErrorMessage";
+import { signupUser } from "../../services/authService";
 
 import { useState } from "react";
 
@@ -17,15 +18,25 @@ function Signup({ switchToLogin }) {
   const [passwordmatch, setPasswordmatch] = useState(false);
 
   const { register, handleSubmit, errors } = useAuthForm({ type: "signup" });
+  const [apiError, setApiError] = useState(null);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { email, username, password, confirmPassword } = data;
     console.log(data);
 
     if (password !== confirmPassword) {
       setPasswordmatch("Password doesnot match");
-    } else {
+      return;
+    }
+    setPasswordmatch(false);
+
+    try {
+      const result = await signupUser({ email, username, password });
+      console.log("successful", result);
       switchToLogin();
+    } catch (error) {
+      setApiError(error.message);
+      console.log("signup error", error);
     }
   };
 
@@ -91,6 +102,8 @@ function Signup({ switchToLogin }) {
 
       <ErrorMessage message={errors.confirmPassword?.message} />
       <ErrorMessage message={passwordmatch} />
+
+      {apiError && <ErrorMessage message={apiError} />}
     </AuthForm>
   );
 }
