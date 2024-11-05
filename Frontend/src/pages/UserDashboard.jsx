@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import cross from "../assets/images/cross.png";
 import home from "../assets/images/home.png";
@@ -27,105 +27,141 @@ import CompleteProfile from "../components/auth/CompleteProfile";
 import ChatUi from "../components/UI/ChatUi";
 import ProfileUi from "../components/UI/ProfileUi";
 import ProfileImage from "../components/common/ProfileImage";
+import { useAuthToken } from "../hooks/useAuthToken";
+import { checkProfileComplete } from "../services/userProfile";
+import ErrorMessage from "../components/UI/ErrorMessage";
+import { set } from "react-hook-form";
 
 function UserDashboard() {
   const [selectedOption, setSelectedOption] = useState("");
-  // const [selectedSidebarIcon, setSelectedSidebarIcon] = useState("Home");
+  const [loading, setLoading] = useState(true);
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
+
+  const userId = useAuthToken();
+
+  useEffect(() => {
+    const fetchProfileCompletion = async () => {
+      if (!userId) return;
+
+      setLoading(true);
+      try {
+        const result = await checkProfileComplete(userId);
+        setIsProfileComplete(result.isComplete);
+        if (!result.isComplete) {
+          setSelectedOption("Profile");
+        }
+      } catch (error) {
+        console.error("Error checking profile completeness:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileCompletion();
+  }, [userId]);
 
   const handleSidebarClick = (option) => {
-    if (selectedOption === option) {
-      setSelectedOption("");
-    } else {
-      setSelectedOption(option);
+    if (!isProfileComplete && option !== "Profile") {
+      alert("Profile is incomplete. Please complete your profile first.");
+      return;
     }
+    setSelectedOption((prev) => (prev === option ? "" : option));
     console.log("Option selected:", option);
   };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <>
-      <div className="flex flex-row h-screen">
-        <div className="flex flex-col pt-14 pl-[79px]">
-          <Logo />
-          <div className="pt-14 pl-[25px]">
-            <ul>
-              <Sidebar
-                icon={home}
-                text="Home"
-                isSelected={selectedOption === "Home"}
-                selectedSidebarIcon={pinkHome}
-                onClick={() => handleSidebarClick("Home")}
-              />
-              <Sidebar
-                icon={search}
-                text="Search"
-                isSelected={selectedOption === "Search"}
-                selectedSidebarIcon={pinkSearch}
-                onClick={() => handleSidebarClick("Search")}
-              />
-              <Sidebar
-                icon={messagess}
-                text="Messages"
-                isSelected={selectedOption === "Messages"}
-                selectedSidebarIcon={pinkMessages}
-                onClick={() => handleSidebarClick("Messages")}
-              />
-              <Sidebar
-                icon={notifications}
-                text="Notification"
-                isSelected={selectedOption === "Notification"}
-                selectedSidebarIcon={pinkNotifications}
-                onClick={() => handleSidebarClick("Notification")}
-              />
-              <Sidebar
-                icon={settings}
-                text="Settings"
-                isSelected={selectedOption === "Settings"}
-                selectedSidebarIcon={pinkSettings}
-                onClick={() => handleSidebarClick("Settings")}
-              />
-              <Sidebar
-                icon={profile}
-                text="Profile"
-                isSelected={selectedOption === "Profile"}
-                selectedSidebarIcon={pinkProfile}
-                onClick={() => handleSidebarClick("Profile")}
-              />
-            </ul>
+    <div className="flex flex-row h-screen">
+      <div className="flex flex-col pt-14 pl-[79px]">
+        <Logo />
+        <div className="pt-14 pl-[25px]">
+          <ul>
+            <Sidebar
+              icon={home}
+              text="Home"
+              isSelected={selectedOption === "Home"}
+              selectedSidebarIcon={pinkHome}
+              onClick={() => handleSidebarClick("Home")}
+            />
+            <Sidebar
+              icon={search}
+              text="Search"
+              isSelected={selectedOption === "Search"}
+              selectedSidebarIcon={pinkSearch}
+              onClick={() => handleSidebarClick("Search")}
+            />
+            <Sidebar
+              icon={messagess}
+              text="Messages"
+              isSelected={selectedOption === "Messages"}
+              selectedSidebarIcon={pinkMessages}
+              onClick={() => handleSidebarClick("Messages")}
+            />
+            <Sidebar
+              icon={notifications}
+              text="Notification"
+              isSelected={selectedOption === "Notification"}
+              selectedSidebarIcon={pinkNotifications}
+              onClick={() => handleSidebarClick("Notification")}
+            />
+            <Sidebar
+              icon={settings}
+              text="Settings"
+              isSelected={selectedOption === "Settings"}
+              selectedSidebarIcon={pinkSettings}
+              onClick={() => handleSidebarClick("Settings")}
+            />
+            <Sidebar
+              icon={profile}
+              text="Profile"
+              isSelected={selectedOption === "Profile"}
+              selectedSidebarIcon={pinkProfile}
+              onClick={() => handleSidebarClick("Profile")}
+            />
+          </ul>
+        </div>
+      </div>
+
+      <VerticalLine height="100%" />
+
+      {/* Conditional rendering based on selected option */}
+      {selectedOption === "Messages" ? (
+        <ChatUi />
+      ) : selectedOption === "Profile" ? (
+        <div className="flex-grow px-[30px] py-14 overflow-y-auto">
+          {isProfileComplete ? (
+            <ProfileUi />
+          ) : (
+            <CompleteProfile onProfileComplete={setIsProfileComplete} />
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
+          <CardLayout />
+          <div className="flex flex-row gap-3 pt-3">
+            <ChooseMatchButton type="button">
+              <img src={cross} alt="cross icon" />
+            </ChooseMatchButton>
+            <ChooseMatchButton type="button">
+              <img src={add} alt="add icon" />
+            </ChooseMatchButton>
           </div>
         </div>
+      )}
 
-        <VerticalLine height="100%" />
-        {selectedOption === "Messages" ? (
-          <ChatUi />
-        ) : selectedOption === "Profile" ? (
-          <div className="flex-grow px-[30px] py-14 overflow-y-auto">
-            {/* <ProfileUi /> */}
-            <CompleteProfile />
+      {/* Profile section for logged-in user */}
+      {selectedOption !== "Profile" && (
+        <div className="flex md:flex-row flex-col items-center md:items-start">
+          <VerticalLine height="100%" />
+          <div className="flex flex-row gap-2 pt-14 pl-2">
+            <ProfileImage image={image} />
+            <ProfileName name="Anush Dhungana" image={image} />
           </div>
-        ) : (
-          <div className="flex flex-col justify-center items-center px-[50px] md:px-[150px] lg:px-[300px]">
-            <CardLayout />
-            <div className="flex flex-row gap-3 pt-3">
-              <ChooseMatchButton type="button">
-                <img src={cross} alt="cross icon" />
-              </ChooseMatchButton>
-              <ChooseMatchButton type="button">
-                <img src={add} alt="add icon" />
-              </ChooseMatchButton>
-            </div>
-          </div>
-        )}
-        {selectedOption !== "Profile" && (
-          <div className="flex md:flex-row flex-col items-center md:items-start">
-            <VerticalLine height="100%" />
-            <div className="flex flex-row gap-2 pt-14 pl-2">
-              <ProfileImage image={image} />
-              <ProfileName name="Anush Dhungana" image={image} />
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 }
 

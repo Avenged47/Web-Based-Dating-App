@@ -14,6 +14,7 @@ function ProfileTextField({
   value,
   onChange,
   placeholder,
+  readOnly = false, // Default to false
 }) {
   const [showPreferences, setShowPreferences] = useState(false);
 
@@ -26,6 +27,8 @@ function ProfileTextField({
           className="pl-4 rounded-md w-full h-[41px]"
           onChange={onChange}
           value={value}
+          readOnly={readOnly} // Make select readOnly if needed
+          disabled={readOnly} // Disable if readOnly is true
         >
           <option value="" disabled>
             Select {name}
@@ -41,7 +44,7 @@ function ProfileTextField({
           {["Male", "Female", "Other"].map((gender) => (
             <div
               key={gender}
-              onClick={() => onGenderSelect(gender)}
+              onClick={() => !readOnly && onGenderSelect(gender)} // Prevent selection if readOnly
               className={`cursor-pointer rounded-md h-[41px] flex items-center justify-center  w-full ${
                 selectedGender === gender
                   ? "bg-custom-pink text-white"
@@ -60,27 +63,29 @@ function ProfileTextField({
             placeholder={placeholder}
             required={isRequired}
             className="pl-4 rounded-md w-full h-[41px]"
-            onClick={() => setShowPreferences(!showPreferences)}
+            onClick={() => !readOnly && setShowPreferences(!showPreferences)} // Prevent action if readOnly
             value={selectedChoices.join(", ")}
             readOnly
           />
-          {showPreferences && (
-            <Preferences
-              choices={choices}
-              selectedChoices={selectedChoices}
-              onToggleChoice={onToggleChoice}
-            />
-          )}
+          {showPreferences &&
+            !readOnly && ( // Only show preferences if not readOnly
+              <Preferences
+                choices={choices}
+                selectedChoices={selectedChoices}
+                onToggleChoice={onToggleChoice}
+              />
+            )}
         </div>
       ) : (
         <input
           type={type}
           name={name}
-          placeholder={name}
+          placeholder={placeholder}
           required={isRequired}
           className="pl-4 rounded-md w-full h-[41px]"
           value={value}
           onChange={onChange}
+          readOnly={readOnly} // Use readOnly prop directly
         />
       )}
     </div>

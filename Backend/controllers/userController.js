@@ -7,6 +7,8 @@ const {
   validateDuplicatePictures,
 } = require("../validation/imageValidation");
 
+const jwt = require("jsonwebtoken");
+
 async function signup(req, res) {
   const { username, email, password } = req.body;
 
@@ -43,7 +45,12 @@ async function login(req, res) {
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
-    res.status(200).json({ msg: "Login successful", user });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ msg: "Login successful", token, user });
   } catch (error) {
     res.status(500).json({ msg: "Server error" });
   }
@@ -55,8 +62,8 @@ async function completeProfile(req, res) {
   console.log("User ID:", id);
 
   const validatedData = {
-    firstName: req.body.firstName.trim(),
-    lastName: req.body.lastName.trim(),
+    firstName: req.body.firstName ? req.body.firstName.trim() : "",
+    lastName: req.body.lastName ? req.body.lastName.trim() : "",
     dob: req.body.dob,
     gender: req.body.gender,
     sexualOrientation: req.body.sexualOrientation,
@@ -64,10 +71,14 @@ async function completeProfile(req, res) {
     interestedIn: req.body.interestedIn,
     interests: Array.isArray(req.body.interests)
       ? req.body.interests.map((interest) => interest.trim())
-      : [req.body.interests.trim()],
+      : req.body.interests
+      ? [req.body.interests.trim()]
+      : [], // Handle interests being undefined
     dislikes: Array.isArray(req.body.dislikes)
       ? req.body.dislikes.map((dislike) => dislike.trim())
-      : [req.body.dislikes.trim()],
+      : req.body.dislikes
+      ? [req.body.dislikes.trim()]
+      : [], // Handle dislikes being undefined
   };
 
   const { error: profileError } = validateProfileData(validatedData);
@@ -79,10 +90,9 @@ async function completeProfile(req, res) {
   if (req.files && req.files.length > 0) {
     validatedImages = req.files.map((file) => file.path);
 
-    // Validate the number of images and check for duplicates
     try {
       validatePictures(validatedImages);
-      validateDuplicatePictures(req.files); // Pass req.files for duplicate check
+      validateDuplicatePictures(req.files);
     } catch (imageError) {
       return res.status(400).json({ msg: imageError.message });
     }
@@ -117,7 +127,7 @@ async function completeProfile(req, res) {
     user.interests = Array.isArray(interests) ? interests : [interests];
     user.dislikes = Array.isArray(dislikes) ? dislikes : [dislikes];
 
-    if (req.files.length > 0) {
+    if (req.files && req.files.length > 0) {
       const existingBaseNames = new Set(
         user.images.map((image) => {
           return image.replace(/^uploads\/\d+-/, "uploads/");

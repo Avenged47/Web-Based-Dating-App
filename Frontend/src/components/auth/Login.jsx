@@ -32,12 +32,12 @@ function Login() {
       ? { email: usernameOrEmail, password }
       : { username: usernameOrEmail, password };
 
-    console.log(payload);
     try {
       const response = await loginUser(payload);
-      console.log(response);
+
       if (response.msg === "Login successful") {
-        console.log("Login successful", response);
+        localStorage.setItem("token", response.token);
+
         navigate("/dashboard");
         setShowErrorMessage("");
       } else {
