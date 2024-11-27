@@ -30,6 +30,7 @@ const Textfield = forwardRef(
           } ${rightIcon ? "pr-12" : "pr-4"} rounded-full w-full h-[41px]`}
           required={isRequired}
           {...props}
+          autoComplete="off"
         />
         {rightIcon && (
           <span className="top-1/2 right-4 absolute transform -translate-y-1/2 cursor-pointer">

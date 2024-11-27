@@ -6,9 +6,6 @@ export const completeProfileSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  // day: Yup.string().required("Day is required"),
-  // month: Yup.string().required("Month is required"),
-  // year: Yup.string().required("Year is required"),
   gender: Yup.string().required("Gender is required"),
   sexualOrientation: Yup.string().required(
     "Please select your sexual orientation"
@@ -23,37 +20,40 @@ export const completeProfileSchema = Yup.object({
   dislikes: Yup.array()
     .of(Yup.string())
     .min(5, "Please select at least five dislikes"),
+  day: Yup.string().required("Day is required"),
+  month: Yup.string().required("Month is required"),
+  year: Yup.string().required("Year is required"),
+  // dob: Yup.string()
+  //   .test("is-valid-dob", "Invalid date of birth", function () {
+  //     const { day, month, year } = this.parent;
+  //     const formattedMonth = String(getMonthNumber(month)).padStart(2, "0"); // Helper function for month
+  //     const formattedDay = String(day).padStart(2, "0");
 
-  // day: Yup.string().required("Day is required"),
-  // month: Yup.string().required("Month is required"),
-  // year: Yup.string()
-  //   .required("Year is required")
-  //   .test(
-  //     "is-18-or-older",
-  //     "You must be at least 18 years old",
-  //     function (value) {
-  //       const { day, month, year } = this.parent; // Get the sibling fields
-  //       const birthDate = new Date(year, month - 1, day); // Create date object
-  //       const today = new Date();
-  //       const age = today.getFullYear() - birthDate.getFullYear();
+  //     const dob = `${year}-${formattedMonth}-${formattedDay}`;
+  //     const birthDate = new Date(dob);
 
-  //       if (
-  //         age > 18 ||
-  //         (age === 18 &&
-  //           today >=
-  //             new Date(
-  //               today.getFullYear(),
-  //               birthDate.getMonth(),
-  //               birthDate.getDate()
-  //             ))
-  //       ) {
-  //         return true;
-  //       }
-
+  //     if (birthDate.toString() === "Invalid Date") {
   //       return false;
   //     }
-  //   ),
+
+  //     const today = new Date();
+  //     const age = today.getFullYear() - birthDate.getFullYear();
+  //     const isBirthdayPassedThisYear =
+  //       today.getMonth() > birthDate.getMonth() ||
+  //       (today.getMonth() === birthDate.getMonth() &&
+  //         today.getDate() >= birthDate.getDate());
+
+  //     return age > 18 || (age === 18 && isBirthdayPassedThisYear);
+  //   })
+  //   .required("Date of birth is required"),
   // images: Yup.array()
-  //   .of(Yup.string().required("Image is required"))
-  //   .min(3, "Please select at least three images"),
+  //   .min(3, "You must upload at least 3 images.") // Ensure a minimum of 3 images
+  //   .of(
+  //     Yup.mixed().test(
+  //       "isValidImage",
+  //       "Please upload a valid image",
+  //       (value) => value && value.type && value.type.startsWith("image/") // Validate that each item is an image
+  //     )
+  //   )
+  //   .required("Please upload your images."),
 });

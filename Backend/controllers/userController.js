@@ -45,9 +45,11 @@ async function login(req, res) {
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+    user.lastLogin = new Date();
+    await user.save();
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "2h",
     });
 
     res.status(200).json({ msg: "Login successful", token, user });
@@ -58,8 +60,6 @@ async function login(req, res) {
 
 async function completeProfile(req, res) {
   const id = req.params.id;
-
-  console.log("User ID:", id);
 
   const validatedData = {
     firstName: req.body.firstName ? req.body.firstName.trim() : "",
@@ -73,12 +73,12 @@ async function completeProfile(req, res) {
       ? req.body.interests.map((interest) => interest.trim())
       : req.body.interests
       ? [req.body.interests.trim()]
-      : [], // Handle interests being undefined
+      : [],
     dislikes: Array.isArray(req.body.dislikes)
       ? req.body.dislikes.map((dislike) => dislike.trim())
       : req.body.dislikes
       ? [req.body.dislikes.trim()]
-      : [], // Handle dislikes being undefined
+      : [],
   };
 
   const { error: profileError } = validateProfileData(validatedData);
@@ -91,7 +91,7 @@ async function completeProfile(req, res) {
     validatedImages = req.files.map((file) => file.path);
 
     try {
-      validatePictures(validatedImages);
+      validatePictures(req.files, false); // Skip minimum validation for updates
       validateDuplicatePictures(req.files);
     } catch (imageError) {
       return res.status(400).json({ msg: imageError.message });
@@ -127,37 +127,32 @@ async function completeProfile(req, res) {
     user.interests = Array.isArray(interests) ? interests : [interests];
     user.dislikes = Array.isArray(dislikes) ? dislikes : [dislikes];
 
-    if (req.files && req.files.length > 0) {
-      const existingBaseNames = new Set(
-        user.images.map((image) => {
-          return image.replace(/^uploads\/\d+-/, "uploads/");
-        })
-      );
+    // Handle image updates
+    const imagesToRemove = req.body.imagesToRemove || [];
+    user.images = user.images.filter(
+      (image) => !imagesToRemove.includes(image)
+    );
 
-      const validatedImages = req.files.map((file) =>
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) =>
         file.path.replace(/\\/g, "/").trim()
       );
-
-      const newImages = validatedImages.filter((image) => {
-        const baseImage = image.replace(/^uploads\/\d+-/, "uploads/");
-        const isDuplicate = existingBaseNames.has(baseImage);
-        console.log(
-          `Checking if base image '${baseImage}' is a duplicate: ${isDuplicate}`
-        );
-        return !isDuplicate;
-      });
-
-      if (newImages.length > 0) {
-        user.images = [...existingBaseNames, ...new Set(newImages)];
-        console.log("Updated User Images:", user.images);
-      }
+      user.images = [...new Set([...user.images, ...newImages])];
     }
 
+    // Enforce the 3-image rule only if profile is not complete
+    if (!user.isProfileComplete && user.images.length < 3) {
+      return res.status(400).json({
+        msg: "At least 3 images are required to complete the profile.",
+      });
+    }
+
+    // Mark profile as complete if necessary
     user.isProfileComplete = true;
 
     await user.save();
 
-    res.status(200).json({ msg: "Profile completed successfully", user });
+    res.status(200).json({ msg: "Profile updated successfully", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Server error" });
@@ -191,15 +186,16 @@ async function checkProfileComplete(req, res) {
   try {
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "User not found", isComplete: false });
     }
-    if (user.isProfileComplete) {
-      return res.status(200).json({ msg: "Profile is completed" });
-    } else {
-      return res.status(200).json({ msg: "Profile is not completed" });
-    }
+    return res.status(200).json({
+      msg: user.isProfileComplete
+        ? "Profile is completed"
+        : "Profile is not completed",
+      isComplete: user.isProfileComplete,
+    });
   } catch (error) {
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", isComplete: false });
   }
 }
 

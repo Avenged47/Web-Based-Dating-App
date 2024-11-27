@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import hero from "../../assets/images/girlfriend.jpg";
-import profile from "../../assets/images/profile.jpg";
-import features from "../../assets/images/features.png";
+// import hero from "../../assets/images/girlfriend.jpg";
+// import profile from "../../assets/images/profile.jpg";
+// import features from "../../assets/images/features.png";
 import leftside from "../../assets/images/leftside.png";
 import rightside from "../../assets/images/rightside.png";
 
-function CardLayout() {
-  const images = [hero, features, profile];
+function CardLayout({ name, images }) {
+  // const images = [hero, features, profile];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
@@ -23,11 +23,11 @@ function CardLayout() {
   };
   return (
     <div className="mx-auto w-full max-w-[400px]">
-      <div className="relative aspect-square">
+      <div className="relative w-full">
         <img
-          src={images[currentIndex]}
-          className="rounded-lg w-full h-full object-cover"
-          alt="Hero"
+          src={`http://localhost:5000/${images && images[currentIndex]}`}
+          alt={name}
+          className="top-0 left-0 rounded-lg w-full h-full aspect-[3/4] object-cover"
         />
         <button
           onClick={handlePrev}
@@ -41,15 +41,13 @@ function CardLayout() {
         >
           <img src={rightside} />
         </button>
-        <div className="bottom-0 absolute bg-white bg-opacity-75 p-4 rounded-b-lg w-full text-center">
-          <p className="font-bold text-custom-indigo text-lg md:text-xl">
-            Anush Dhungana
+        <div className="bottom-0 absolute bg-white bg-opacity-75 rounded-b-lg w-full text-center">
+          <p className="pt-1 font-bold text-custom-indigo text-lg md:text-xl">
+            {name}
           </p>
-          <p className="font-medium text-custom-indigo text-xs md:text-sm">
-            12Km away
-          </p>
-          <p className="font-normal text-custom-indigo text-xs md:text-sm break-words">
-            blah blah blah blah.
+
+          <p className="px-2 py-2 font-normal text-center text-custom-indigo text-xs md:text-sm break-words">
+            "❤️We are matched❤️"
           </p>
         </div>
       </div>

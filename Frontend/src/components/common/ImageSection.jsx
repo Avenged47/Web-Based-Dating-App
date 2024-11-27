@@ -1,8 +1,8 @@
 import { useState } from "react";
 import addPictureIcon from "../../assets/images/add picture.png";
 
-function ImageSection({ onImageUpload }) {
-  const [selectedImage, setSelectedImage] = useState(null);
+function ImageSection({ onImageUpload, imageSrc }) {
+  const [selectedImage, setSelectedImage] = useState(imageSrc || null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -28,6 +28,12 @@ function ImageSection({ onImageUpload }) {
         <img
           src={selectedImage}
           alt="Selected"
+          className="rounded-[7px] w-full h-full object-cover"
+        />
+      ) : imageSrc ? (
+        <img
+          src={imageSrc}
+          alt="User Image"
           className="rounded-[7px] w-full h-full object-cover"
         />
       ) : (

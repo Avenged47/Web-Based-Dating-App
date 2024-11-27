@@ -1,5 +1,5 @@
 const multer = require("multer");
-const path = require("path");
+
 const {
   validatePictures,
   validateDuplicatePictures,
@@ -7,10 +7,10 @@ const {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Define the destination directory
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Create unique filenames
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
@@ -25,14 +25,16 @@ function uploadImages(req, res, next) {
     }
 
     try {
-      validatePictures(req.files);
-      validateDuplicatePictures(req.files);
-
+      if (req.files && req.files.length > 0) {
+        validatePictures(req.files, req.body.existingImages ? true : false);
+        validateDuplicatePictures(req.files);
+      }
       next();
     } catch (validationError) {
-      return res
-        .status(400)
-        .json({ msg: "Image upload failed", error: validationError.message });
+      return res.status(400).json({
+        msg: "Image upload failed from image controller",
+        error: validationError.message,
+      });
     }
   });
 }

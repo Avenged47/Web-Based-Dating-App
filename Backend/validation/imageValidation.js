@@ -1,6 +1,6 @@
 // imageValidation.js
-function validatePictures(pictures) {
-  if (pictures.length < 3) {
+function validatePictures(pictures, enforceMinimum = true) {
+  if (enforceMinimum && pictures.length < 3) {
     throw new Error("At least 3 files are required");
   }
 }

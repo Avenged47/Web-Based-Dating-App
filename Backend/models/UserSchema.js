@@ -62,6 +62,10 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  lastLogin: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 UserSchema.pre("save", async function (next) {
@@ -78,7 +82,7 @@ UserSchema.pre("remove", async function (next) {
     user.images.forEach((imagePath) => {
       const fullImagePath = path.join(__dirname, "..", imagePath);
 
-      console.log("Attempting to delete:", fullImagePath); // Debugging line to check the path
+      console.log("Attempting to delete:", fullImagePath);
 
       fs.unlink(fullImagePath, (err) => {
         if (err) {
@@ -93,5 +97,5 @@ UserSchema.pre("remove", async function (next) {
   next();
 });
 
-const user = mongoose.model("user", UserSchema);
+const user = mongoose.model("User", UserSchema);
 module.exports = user;

@@ -4,6 +4,7 @@ import FormFieldTitle from "../UI/FormFieldTitle";
 import ProfileTextField from "../UI/ProfileTextField";
 import Button from "../UI/ButtonUi";
 import { useEffect, useState } from "react";
+import * as Yup from "yup";
 
 import { completeProfileSchema } from "../../validation/completeProfileScheme";
 import ErrorMessage from "../UI/ErrorMessage";
@@ -12,8 +13,10 @@ import {
   completeYourProfile,
   getUserProfile,
 } from "../../services/userProfile";
+import { useNavigate } from "react-router-dom";
 
-function CompleteProfile({ onProfileComplete }) {
+function CompleteProfile({ onProfileComplete, setShowCompleteProfile }) {
+  const navigate = useNavigate();
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = [
     "January",
@@ -40,7 +43,6 @@ function CompleteProfile({ onProfileComplete }) {
 
   const sexualOrientationOptions = [
     "Straight",
-    "Heterosexual",
     "Homosexual",
     "Bisexual",
     "Pansexual",
@@ -48,12 +50,6 @@ function CompleteProfile({ onProfileComplete }) {
     "Queer",
     "Lesbian",
     "Gay",
-    "Transgender",
-    "Non-binary",
-    "Genderqueer",
-    "Two-spirit",
-    "Questioning",
-    "Other",
   ];
 
   const relationshipStatuses = [
@@ -61,22 +57,11 @@ function CompleteProfile({ onProfileComplete }) {
     "In a Relationship",
     "Married",
     "Engaged",
-    "It’s Complicated",
     "Divorced",
-    "Separated",
     "Widowed",
-    "Open Relationship",
-    "Polyamorous",
-    "Prefer Not to Say",
   ];
 
-  const interestedInOptions = [
-    "Men",
-    "Women",
-    "Non-binary",
-    "Everyone",
-    "Prefer Not to Say",
-  ];
+  const interestedInOptions = ["Men", "Women", "Non-binary", "Everyone"];
 
   const interests = [
     "Traveling",
@@ -121,6 +106,8 @@ function CompleteProfile({ onProfileComplete }) {
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
+  const [DobError, setDobError] = useState("");
+  const [ImageError, setImageError] = useState("");
 
   const userId = useAuthToken();
   const token = localStorage.getItem("token");
@@ -134,6 +121,7 @@ function CompleteProfile({ onProfileComplete }) {
       ...prevData,
       gender: gender,
     }));
+    validateField("gender", gender);
   };
 
   const handleToggleInterest = (choice) => {
@@ -146,6 +134,7 @@ function CompleteProfile({ onProfileComplete }) {
         ...prev,
         interests: newInterests,
       }));
+      validateField("interests", newInterests);
 
       return newInterests;
     });
@@ -162,11 +151,28 @@ function CompleteProfile({ onProfileComplete }) {
 
         dislikes: newDislikes,
       }));
+      validateField("dislikes", newDislikes);
 
       return newDislikes;
     });
   };
 
+  const validateField = async (fieldName, value) => {
+    try {
+      await Yup.reach(completeProfileSchema, fieldName).validate(value);
+
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[fieldName];
+        return updatedErrors;
+      });
+    } catch (error) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: error.message,
+      }));
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -215,14 +221,40 @@ function CompleteProfile({ onProfileComplete }) {
         const userProfile = await getUserProfile(userId);
 
         if (userProfile && userProfile.user) {
-          // console.log("User email:", userProfile.user.email);
-          // console.log("Username:", userProfile.user.username);
+          const dob = userProfile.user.dob || "";
+
+          const dobDate = dob ? new Date(dob) : null;
+          const day = dobDate ? String(dobDate.getDate()).padStart(2, "0") : "";
+          const month = dobDate ? months[dobDate.getMonth()] : "";
+          const year = dobDate ? String(dobDate.getFullYear()) : "";
+
+          const gender = userProfile.user.gender || "";
+          const userInterests = userProfile.user.interests || [];
+          const userDislikes = userProfile.user.dislikes || [];
+          const userImages = userProfile.user.images || [];
 
           setFormData((prevData) => ({
             ...prevData,
             email: userProfile.user.email || "",
             userName: userProfile.user.username || "",
+            firstName: userProfile.user.firstName || "",
+            lastName: userProfile.user.lastName || "",
+            gender: gender,
+            dob: dob || "",
+            day: day,
+            month: month,
+            year: year,
+            sexualOrientation: userProfile.user.sexualOrientation || "",
+            relationshipStatus: userProfile.user.relationshipStatus || "",
+            interestedIn: userProfile.user.interestedIn || "",
+            interests: userInterests,
+            dislikes: userDislikes,
+            images: userImages,
           }));
+          setSelectedInterests(userInterests);
+          setSelectedDislikes(userDislikes);
+          setSelectedGender(gender);
+          setImageData(userImages);
         } else {
           console.error("User data is missing or not properly structured.");
         }
@@ -247,9 +279,35 @@ function CompleteProfile({ onProfileComplete }) {
       const day = String(formData.day).padStart(2, "0");
 
       const dob = `${year}-${month}-${day}`;
+      const dobDate = new Date(dob);
+
+      // Get the current date
+      const currentDate = new Date();
+
+      // Calculate the age by comparing the birthdate with the current date
+      let age = currentDate.getFullYear() - dobDate.getFullYear();
+      const monthDifference = currentDate.getMonth() - dobDate.getMonth();
+
+      if (
+        monthDifference < 0 ||
+        (monthDifference === 0 && currentDate.getDate() < dobDate.getDate())
+      ) {
+        age--;
+      }
+
+      if (age < 18) {
+        setDobError("You must be at least 18 years old.");
+      } else {
+        setDobError("");
+      }
+
+      if (imageData.length < 3) {
+        setImageError("You must upload at least 3 images.");
+      } else {
+        setImageError("");
+      }
 
       submittedData.append("dob", dob);
-
       submittedData.append("firstName", formData.firstName);
       submittedData.append("lastName", formData.lastName);
       submittedData.append("email", formData.email);
@@ -265,9 +323,15 @@ function CompleteProfile({ onProfileComplete }) {
       selectedDislikes.forEach((dislike) => {
         submittedData.append("dislikes[]", dislike);
       });
-      imageData.forEach((file) => {
-        submittedData.append("images", file);
-      });
+      if (imageData.length > 0) {
+        imageData.forEach((file) => {
+          submittedData.append("images", file);
+        });
+      } else if (formData.images && formData.images.length > 0) {
+        formData.images.forEach((imagePath) => {
+          submittedData.append("images", imagePath);
+        });
+      }
 
       for (const [key, value] of submittedData.entries()) {
         console.log(key, value);
@@ -280,7 +344,10 @@ function CompleteProfile({ onProfileComplete }) {
           token
         );
         console.log("Profile submitted:");
-        onProfileComplete(true);
+        if (onProfileComplete) {
+          onProfileComplete(true);
+        }
+        setShowCompleteProfile(false);
       } catch (error) {
         console.error("Error submitting profile:", error.message);
       }
@@ -369,7 +436,7 @@ function CompleteProfile({ onProfileComplete }) {
                 />
               </div>
             </div>
-
+            {DobError && <ErrorMessage message={DobError} />}
             <FormFieldTitle title="Gender" />
             <ProfileTextField
               type="gender"
@@ -450,10 +517,18 @@ function CompleteProfile({ onProfileComplete }) {
             <FormFieldTitle title="Choose Picture" />
             <div className="gap-4 grid grid-cols-2 pt-2 pb-2">
               {[...Array(6)].map((_, index) => (
-                <ImageSection key={index} onImageUpload={handleImageUpload} />
+                <ImageSection
+                  key={index}
+                  onImageUpload={handleImageUpload}
+                  imageSrc={
+                    imageData[index]
+                      ? `http://localhost:5000/${imageData[index]}`
+                      : null
+                  }
+                />
               ))}
             </div>
-            {errors.images && <ErrorMessage message={errors.images} />}
+            {ImageError && <ErrorMessage message={ImageError} />}
           </div>
 
           <div className="flex justify-center pt-3 pb-2">

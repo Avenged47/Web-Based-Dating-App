@@ -21,7 +21,7 @@ export const loginUser = async (data) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      throw new Error(error.response.data.message || "Invalid credentials");
+      throw error.response.data;
     } else {
       throw new Error("Network error, please try again");
     }

@@ -13,8 +13,11 @@ import ErrorMessage from "../UI/ErrorMessage";
 import { useState } from "react";
 
 import { loginUser } from "../../services/authService";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useContext } from "react";
 
 function Login() {
+  const { login } = useContext(AuthContext);
   const [showErrorMessage, setShowErrorMessage] = useState("");
 
   const { register, handleSubmit, errors } = useAuthForm({ type: "login" });
@@ -25,7 +28,8 @@ function Login() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    const { usernameOrEmail, password } = data;
+    const usernameOrEmail = data.usernameOrEmail.trim();
+    const password = data.password.trim();
 
     const isEmail = usernameOrEmail.includes("@");
     const payload = isEmail
@@ -36,18 +40,17 @@ function Login() {
       const response = await loginUser(payload);
 
       if (response.msg === "Login successful") {
-        localStorage.setItem("token", response.token);
+        login(response.token);
 
-        navigate("/dashboard");
         setShowErrorMessage("");
       } else {
         setShowErrorMessage("Invalid username or password");
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setShowErrorMessage("Invalid username or password");
+      if (error.msg) {
+        setShowErrorMessage(error.msg);
       } else {
-        setShowErrorMessage("An error occured during login. Please try again");
+        setShowErrorMessage(error.message);
       }
     }
   };

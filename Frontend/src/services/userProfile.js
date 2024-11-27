@@ -8,6 +8,7 @@ export const checkProfileComplete = async (userId) => {
   try {
     const response = await apiClient.get(`/api/checkProfileComplete/${userId}`);
     return response.data;
+    console.log(response);
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Error checking profile completeness"
@@ -45,5 +46,25 @@ export const getUserProfile = async (userId) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Error fetching profile");
+  }
+};
+
+export const logout = (socket) => {
+  console.log("socket", socket);
+  try {
+    if (socket && socket.connected) {
+      socket.disconnect();
+      console.log("Socket disconnected");
+    }
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+
+    window.location.href = "/";
+
+    console.log("Logout successful");
+  } catch (error) {
+    console.log("Error logging out:", error);
+    throw new Error(error.response?.data?.message || "Error logging out");
   }
 };
